@@ -1,12 +1,15 @@
+Here's the full file:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fund III Portfolio Construction — Good Friends VC</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { background: #FFF5E6; font-family: Georgia, serif; color: #031738; min-height: 100vh; }
@@ -58,11 +61,6 @@
     const NAVY="#031738", CREAM="#FFF5E6", CREAM_DARK="#EAD9C0", GOLD="#B08D57";
     const BLUE2="#4A6FA5", BLUE3="#9DB5C7", GREEN="#2E7D32", GREEN_BG="#E8F5E9", PURPLE="#7B5EA7";
 
-    // ── Usable DP as of April 17, 2026 ──────────────────────────
-    // Source: Kelly Quick_DP.xlsx, fees from Aduro directly
-    // LP+GP callable at 55%, outstanding calls included
-    // SlapSnacks $200K soft commit ALREADY DEDUCTED in this base figure
-    // Do not deduct SlapSnacks again below
     const BASE_DP = 6364164;
 
     const TIER_COLORS = { null:"#C8C0B4", 1:NAVY, 2:BLUE2, 3:BLUE3 };
@@ -560,3 +558,4 @@
   </script>
 </body>
 </html>
+```
