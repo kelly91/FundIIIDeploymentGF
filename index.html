@@ -178,6 +178,11 @@ Here's the full code:
 
       const remainingColor = afterPipeline<0.5?"#DC3545":afterPipeline<1.5?"#E67E22":GREEN;
 
+      const foPct   = remaining>0 ? Math.round((foTotal/remaining)*100) : 0;
+      const newPct  = 100 - foPct;
+      const foDeals = Math.floor(foTotal/0.385);
+      const newPoolM = Math.max(0, remaining - foTotal);
+
       const addDeal = () => {
         if(!newName.trim()||newCheckK<=0) return;
         setPipeline(p=>[...p,{id:Date.now(),name:newName.trim(),checkK:newCheckK}]);
@@ -295,6 +300,30 @@ Here's the full code:
                 )}
               </div>
             ))}
+          </div>
+
+          {/* Current Split */}
+          <div style={{background:"white",borderRadius:10,border:`1px solid ${CREAM_DARK}`,padding:"14px 18px",marginBottom:14}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <div style={{fontSize:9,letterSpacing:"0.1em",opacity:0.4,fontFamily:"Arial,sans-serif",textTransform:"uppercase"}}>Current Split</div>
+              <div style={{fontSize:14,fontWeight:700,color:NAVY,fontFamily:"Georgia,serif"}}>{foPct} / {newPct}</div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:12}}>
+              <div>
+                <div style={{fontSize:9,letterSpacing:"0.1em",opacity:0.45,fontFamily:"Arial,sans-serif",textTransform:"uppercase",marginBottom:5}}>Follow-On Pool</div>
+                <div style={{fontSize:17,fontWeight:700,color:BLUE2,fontFamily:"Georgia,serif"}}>${foTotal.toFixed(2)}M <span style={{fontSize:12,opacity:0.55,fontWeight:400}}>— {foPct}%</span></div>
+                <div style={{fontSize:10,opacity:0.55,fontFamily:"Arial,sans-serif",marginTop:4}}>~{foDeals} follow-on{foDeals===1?"":"s"} at $385K avg</div>
+              </div>
+              <div style={{textAlign:"right"}}>
+                <div style={{fontSize:9,letterSpacing:"0.1em",opacity:0.45,fontFamily:"Arial,sans-serif",textTransform:"uppercase",marginBottom:5}}>New Deals Pool</div>
+                <div style={{fontSize:17,fontWeight:700,color:NAVY,fontFamily:"Georgia,serif"}}>${newPoolM.toFixed(2)}M <span style={{fontSize:12,opacity:0.55,fontWeight:400}}>— {newPct}%</span></div>
+                <div style={{fontSize:10,opacity:0.55,fontFamily:"Arial,sans-serif",marginTop:4}}>~{maxNewDeals} new deal{maxNewDeals===1?"":"s"} at ${avgCheck}K</div>
+              </div>
+            </div>
+            <div style={{height:12,borderRadius:6,background:CREAM_DARK,overflow:"hidden",display:"flex"}}>
+              <div style={{height:"100%",width:`${foPct}%`,background:BLUE2,transition:"width 0.3s ease"}} title={`Follow-On ${foPct}%`}/>
+              <div style={{height:"100%",width:`${newPct}%`,background:NAVY,transition:"width 0.3s ease"}} title={`New Deals ${newPct}%`}/>
+            </div>
           </div>
 
           {/* Tier legend */}
