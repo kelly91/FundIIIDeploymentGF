@@ -1,4 +1,4 @@
-Here's the full file:
+Here's the full code:
 
 ```html
 <!DOCTYPE html>
@@ -57,7 +57,28 @@ Here's the full file:
   </script>
   <div id="root"></div>
   <script type="text/babel">
-    const { useState, useMemo } = React;
+    const { useState, useMemo, useEffect } = React;
+
+    const STORAGE_KEY = "gf-fund3-state-v1";
+    const encodeState = (s) => {
+      try { return btoa(encodeURIComponent(JSON.stringify(s))); } catch { return ""; }
+    };
+    const decodeState = (h) => {
+      try { return JSON.parse(decodeURIComponent(atob(h))); } catch { return null; }
+    };
+    const loadInitial = () => {
+      const hash = window.location.hash.replace(/^#/, "");
+      if (hash) {
+        const fromHash = decodeState(hash);
+        if (fromHash) return fromHash;
+      }
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch {}
+      return null;
+    };
+    const INITIAL = loadInitial();
     const NAVY="#031738", CREAM="#FFF5E6", CREAM_DARK="#EAD9C0", GOLD="#B08D57";
     const BLUE2="#4A6FA5", BLUE3="#9DB5C7", GREEN="#2E7D32", GREEN_BG="#E8F5E9", PURPLE="#7B5EA7";
 
@@ -90,23 +111,46 @@ Here's the full file:
     const ASSIGNABLE = COMPANIES.filter(c => !c.wired);
 
     function App() {
-      const [remaining, setRemaining] = useState(BASE_DP / 1e6);
-      const [avgCheck, setAvgCheck]   = useState(350);
+      const [remaining, setRemaining] = useState(INITIAL?.remaining ?? BASE_DP / 1e6);
+      const [avgCheck, setAvgCheck]   = useState(INITIAL?.avgCheck ?? 350);
       const [showSim, setShowSim]     = useState(true);
       const [showConstraint, setShowConstraint] = useState(false);
-      const [pipeline, setPipeline]   = useState([]);
+      const [pipeline, setPipeline]   = useState(INITIAL?.pipeline ?? []);
       const [newName, setNewName]     = useState('');
       const [newCheckK, setNewCheckK] = useState(350);
-      const [dealPerMonth, setDealPerMonth] = useState(1);
+      const [dealPerMonth, setDealPerMonth] = useState(INITIAL?.dealPerMonth ?? 1);
       const [asgn, setAsgn] = useState(() => {
-        const a = {};
-        COMPANIES.forEach(c => { a[c.name] = { tier:null, followOn:250 }; });
-        return a;
+        const base = {};
+        COMPANIES.forEach(c => { base[c.name] = { tier:null, followOn:250 }; });
+        if (INITIAL?.asgn) {
+          COMPANIES.forEach(c => { if (INITIAL.asgn[c.name]) base[c.name] = INITIAL.asgn[c.name]; });
+        }
+        return base;
       });
+      const [copied, setCopied] = useState(false);
+
+      useEffect(() => {
+        const state = { remaining, avgCheck, pipeline, dealPerMonth, asgn };
+        const encoded = encodeState(state);
+        if (encoded) window.history.replaceState(null, "", "#" + encoded);
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+      }, [remaining, avgCheck, pipeline, dealPerMonth, asgn]);
+
+      const copyShareLink = () => {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        });
+      };
 
       const setTier = (name, val) => setAsgn(a => ({...a,[name]:{...a[name],tier:val==="null"?null:Number(val)}}));
       const setFO   = (name, val) => setAsgn(a => ({...a,[name]:{...a[name],followOn:val}}));
-      const resetAll = () => setAsgn(a => { const n={...a}; ASSIGNABLE.forEach(c=>{n[c.name]={tier:null,followOn:250}}); return n; });
+      const resetAll = () => {
+        setAsgn(a => { const n={...a}; ASSIGNABLE.forEach(c=>{n[c.name]={tier:null,followOn:250}}); return n; });
+        setPipeline([]);
+        try { localStorage.removeItem(STORAGE_KEY); } catch {}
+        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      };
 
       const assignedCount = ASSIGNABLE.filter(c => asgn[c.name].tier !== null).length;
       const allAssigned   = assignedCount === ASSIGNABLE.length;
@@ -163,9 +207,9 @@ Here's the full file:
               <p style={{fontSize:12,opacity:0.5,fontStyle:"italic",margin:"4px 0 0"}}>Assign tiers. Watch the math update in real time.</p>
             </div>
             <div style={{display:"flex",gap:10,alignItems:"center"}}>
-              <div style={{background:"#FFF8E1",border:"1px solid #F0D080",borderRadius:20,padding:"6px 14px",fontSize:11,color:"#856404",fontFamily:"Arial,sans-serif"}}>
-                🔒 SlapSnacks $200K already in base · Fees from Aduro · LP+GP callable included
-              </div>
+              <button onClick={copyShareLink} style={{background:copied?GREEN_BG:"white",border:`1px solid ${copied?GREEN:CREAM_DARK}`,borderRadius:20,padding:"6px 14px",fontSize:11,color:copied?GREEN:NAVY,fontFamily:"Arial,sans-serif",cursor:"pointer",fontWeight:600,letterSpacing:"0.04em"}}>
+                {copied ? "✓ Link copied" : "Copy shareable link"}
+              </button>
               <div style={{background:allAssigned?GREEN_BG:NAVY,borderRadius:20,padding:"7px 16px",display:"flex",alignItems:"center",gap:8}}>
                 <span style={{fontSize:13,fontWeight:700,color:allAssigned?GREEN:"white"}}>{assignedCount} / {ASSIGNABLE.length} assigned</span>
                 {!allAssigned && <span style={{fontSize:11,color:"rgba(255,255,255,0.55)",animation:"pulse 2s infinite"}}>● live</span>}
