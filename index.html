@@ -84,7 +84,8 @@
     const CO_INVEST_RATIO = 0.016593;
     const FUND3_SHARE    = 1 - CO_INVEST_RATIO;
     const FUND3_DP       = BASE_DP_FAMILY * FUND3_SHARE;  // 6,258,564
-    const SLAP_K         = 200;  // SlapSnacks earmark in $K
+    // SlapSnacks already deducted from BASE_DP (in costs section of DP sheet)
+    // Do NOT deduct again here
 
     const TIER_COLORS = { null: "#C8C0B4", 1: NAVY, 2: BLUE2, 3: BLUE3 };
     const TIER_LABELS = { null: "— Assign Tier —", 1: "Tier 1 — Double Down", 2: "Tier 2 — Stay In", 3: "Tier 3 — Let It Ride" };
@@ -150,16 +151,14 @@
       }, [asgn]);
 
       // SlapSnacks earmark (locked, always deducted)
-      const slapM = SLAP_K / 1000;
-
+      // SlapSnacks already baked into BASE_DP — no deduction needed
       // Pipeline future commits
       const pipelineM = pipeline.reduce((s,d) => s + d.checkK/1000, 0);
 
       // Capital waterfall
-      const afterSlap     = remaining - slapM;
-      const afterFO       = Math.max(0, afterSlap - foTotal);
+      const afterFO       = Math.max(0, remaining - foTotal);
       const afterPipeline = Math.max(0, afterFO - pipelineM);
-      const overBudget    = (slapM + foTotal + pipelineM) > remaining;
+      const overBudget    = (foTotal + pipelineM) > remaining;
 
       const maxNewDeals = avgCheck > 0 ? Math.floor(afterPipeline / (avgCheck/1000)) : 0;
 
@@ -247,7 +246,7 @@
                     { label:"FAMILY TOTAL DP",         val:"$6,364,164",  sub:"LP+GP callable · Aduro fees" },
                     { label:"AFFILIATES III DP",        val:"$105,600",    sub:"Binding constraint at 1.6593%" },
                     { label:"FUND III DEPLOYABLE",      val:"$6,258,564",  sub:"98.3407% of family total" },
-                    { label:"SLAP SNACKS EARMARK",      val:"$200,000",    sub:"Locked — pending close" },
+                    { label:"SLAP SNACKS",              val:"$200K in base",sub:"Already deducted from usable DP" },
                   ].map(({label,val,sub})=>(
                     <div key={label} style={{ padding:"10px 14px", background:"#FAFAF8", borderRadius:8, border:`1px solid ${CREAM_DARK}` }}>
                       <div style={{ fontSize:9, letterSpacing:"0.1em", opacity:0.4, fontFamily:"Arial,sans-serif", marginBottom:6 }}>{label}</div>
@@ -268,7 +267,7 @@
                 { label:"FUND III SIZE",              val:"$20.2M",                     edit:false },
                 { label:"DEPLOYED (incl. FOs)",       val:f$(deployed),                 edit:false, bar:true },
                 { label:"TOTAL USABLE DP",            val:`$${remaining.toFixed(3)}M`,  edit:true  },
-                { label:"SLAP SNACKS (EARMARKED)",    val:`-$${slapM.toFixed(2)}M`,     edit:false, locked:true },
+                { label:"SLAP SNACKS (EARMARKED)",    val:"$200K baked in",             edit:false, locked:true },
                 { label:"FOLLOW-ON RESERVED",         val: allAssigned ? `$${foTotal.toFixed(2)}M` : "—", edit:false },
                 { label:"AVAILABLE — NEW DEALS",      val: `$${afterPipeline.toFixed(2)}M`, edit:false, highlight: true },
               ].map(({ label, val, edit, bar, highlight, locked }) => (
@@ -440,19 +439,17 @@
                     {/* LEFT: Earmarks + Pipeline entry */}
                     <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
 
-                      {/* SlapSnacks locked earmark */}
-                      <div style={{ ...card("#FFF8E1", "1px solid #F0D080") }}>
-                        <div style={{ fontSize:9, letterSpacing:"0.1em", color:"#856404", fontFamily:"Arial,sans-serif", marginBottom:10 }}>🔒 LOCKED EARMARKS</div>
-                        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"8px 12px", background:"white", borderRadius:8, border:"1px solid #F0D080" }}>
-                          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                            <span style={{ fontSize:11, opacity:0.5 }}>🔒</span>
-                            <span style={{ fontSize:13, fontWeight:600 }}>SlapSnacks</span>
-                            <span style={{ fontSize:10, color:"#856404", fontFamily:"Arial,sans-serif", fontStyle:"italic" }}>soft commit · pending close</span>
+                      {/* SlapSnacks note — already in base DP */}
+                      <div style={{ ...card("#FFF8E1", "1px solid #F0D080"), padding:"10px 14px" }}>
+                        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                          <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                            <span style={{ fontSize:12 }}>🔒</span>
+                            <div>
+                              <div style={{ fontSize:12, fontWeight:600, color:"#856404" }}>SlapSnacks $200K</div>
+                              <div style={{ fontSize:10, opacity:0.6, fontFamily:"Arial,sans-serif" }}>Soft commit already deducted from $6.4M base</div>
+                            </div>
                           </div>
-                          <span style={{ fontSize:14, fontWeight:700, color:"#856404" }}>$200K</span>
-                        </div>
-                        <div style={{ fontSize:10, opacity:0.5, marginTop:8, fontFamily:"Arial,sans-serif" }}>
-                          Always deducted from usable DP. Remove only if deal falls through.
+                          <span style={{ fontSize:11, color:"#856404", fontFamily:"Arial,sans-serif", fontStyle:"italic" }}>baked in ✓</span>
                         </div>
                       </div>
 
@@ -524,9 +521,7 @@
                       <div style={card("#FAFAF8")}>
                         <div style={{ fontSize:9, letterSpacing:"0.1em", opacity:0.4, fontFamily:"Arial,sans-serif", marginBottom:12 }}>CAPITAL WATERFALL</div>
                         {[
-                          { label:"Total usable DP",                val:remaining,    color:NAVY },
-                          { label:"SlapSnacks earmark (locked)",     val:-slapM,       color:"#856404", sub:true },
-                          { label:"After SlapSnacks",               val:afterSlap,    color:NAVY, bold:true },
+                          { label:"Total usable DP (SlapSnacks incl.)", val:remaining, color:NAVY },
                           foTotal > 0 && { label:`Follow-on reserves (${t1cos+t2cos} cos)`, val:-foTotal, color:BLUE2, sub:true },
                           foTotal > 0 && { label:"After follow-ons",  val:afterFO,     color:NAVY, bold:true },
                           pipelineM > 0 && { label:`${pipeline.length} future commit${pipeline.length!==1?"s":""}`, val:-pipelineM, color:PURPLE, sub:true },
@@ -558,8 +553,7 @@
                         </div>
                         <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
                           {[
-                            { label:"SlapSnacks (earmarked)",        count:1,                                                months:(1/dealsPerMonth).toFixed(1) },
-                            pipeline.length > 0 && { label:"Future commits (named)",     count:pipeline.length,                                     months:(pipeline.length/dealsPerMonth).toFixed(1) },
+                            pipeline.length > 0 && { label:"Future commits (named)", count:pipeline.length, months:(pipeline.length/dealsPerMonth).toFixed(1) },
                             { label:`Additional @ $${avgCheck}K avg`, count:maxNewDeals,                                      months:dealsPerMonth > 0 ? (maxNewDeals/dealsPerMonth).toFixed(1) : "—" },
                           ].filter(Boolean).map(({ label, count, months }) => (
                             <div key={label} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"6px 0", borderBottom:"1px solid rgba(255,255,255,0.1)" }}>
@@ -632,7 +626,7 @@
             )}
 
             <p style={{ textAlign:"center", fontStyle:"italic", color:NAVY, opacity:0.3, fontSize:11 }}>
-              Usable DP $6,364,164 · Fees sourced from Aduro · LP+GP callable at 55% · Outstanding GP calls included · Affiliates III co-invest at 1.6593% · SlapSnacks $200K earmarked and deducted
+              Usable DP $6,364,164 (SlapSnacks $200K already deducted in base) · Fees sourced from Aduro · LP+GP callable at 55% · Outstanding GP calls included · Affiliates III co-invest at 1.6593%
             </p>
 
           </div>
