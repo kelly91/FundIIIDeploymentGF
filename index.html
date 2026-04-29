@@ -1,6 +1,3 @@
-Here's the full code:
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -82,25 +79,26 @@ Here's the full code:
     const NAVY="#031738", CREAM="#FFF5E6", CREAM_DARK="#EAD9C0", GOLD="#B08D57";
     const BLUE2="#4A6FA5", BLUE3="#9DB5C7", GREEN="#2E7D32", GREEN_BG="#E8F5E9", PURPLE="#7B5EA7";
 
-    const BASE_DP = 6364164;
+    const BASE_DP = 5864164;
 
     const TIER_COLORS = { null:"#C8C0B4", 1:NAVY, 2:BLUE2, 3:BLUE3 };
     const TIER_LABELS = { null:"— Assign Tier —", 1:"Tier 1 — Double Down", 2:"Tier 2 — Stay In", 3:"Tier 3 — Let It Ride" };
 
     const COMPANIES = [
-      { name:"Mosaic Platforms",  sector:"Fintech",     cost:390000,  fmv:390000,  moic:1.00, entryVal:40,   latestVal:72.5, own:0.0091,  stage:"Pre-Seed", signal:"Green",  note:"$750K follow-on wired ✓", wired:true  },
-      { name:"Seneca",            sector:"Hardware",    cost:219990,  fmv:346089,  moic:1.57, entryVal:95,   latestVal:220,  own:0.00348, stage:"Series A", signal:"Green",  note:"$20K Series A FO wired ✓", wired:true  },
-      { name:"PreemptiveAI",      sector:"Healthcare",  cost:750000,  fmv:750000,  moic:1.00, entryVal:20,   latestVal:null, own:0.0682,  stage:"Seed",     signal:"Green",  note:"No Follow On",           wired:false },
-      { name:"Climatic",          sector:"Healthcare",  cost:1000001, fmv:1000000, moic:1.00, entryVal:10,   latestVal:18,   own:0.1111,  stage:"Seed",     signal:"Yellow", note:"No Follow On",           wired:false },
-      { name:"Biologica",         sector:"Consumer",    cost:165000,  fmv:165000,  moic:1.00, entryVal:7.5,  latestVal:38,   own:0.0073,  stage:"Pre-Seed", signal:"Green",  note:"GP-founded (JZ)",        wired:false },
-      { name:"Stiller's Soda",    sector:"Food & Bev",  cost:50000,   fmv:80769,   moic:1.62, entryVal:10,   latestVal:28,   own:null,    stage:"Seed",     signal:"Yellow", note:null,                     wired:false },
-      { name:"Drivepoint",        sector:"Fintech",     cost:498599,  fmv:498599,  moic:1.00, entryVal:17,   latestVal:24,   own:0.0208,  stage:"Series A", signal:"Yellow", note:null,                     wired:false },
+      { name:"Mosaic Platforms",  sector:"Fintech",     cost:390000,  fmv:390000,  moic:1.00, entryVal:43,   latestVal:72.5, own:0.0091,  stage:"Pre-Seed", signal:"Green",  note:"$750K follow-on wired ✓", wired:true  },
+      { name:"Seneca",            sector:"Hardware",    cost:219990,  fmv:346089,  moic:1.57, entryVal:115,  latestVal:220,  own:0.00348, stage:"Series A", signal:"Green",  note:"$20K Series A FO wired ✓", wired:true  },
+      { name:"PreemptiveAI",      sector:"Healthcare",  cost:750000,  fmv:750000,  moic:1.00, entryVal:22,   latestVal:null, own:0.0682,  stage:"Seed",     signal:"Green",  note:"No Follow On",           wired:false },
+      { name:"Climatic",          sector:"Healthcare",  cost:1000001, fmv:1000000, moic:1.00, entryVal:18,   latestVal:null, own:0.1111,  stage:"Seed",     signal:"Yellow", note:"No Follow On",           wired:false },
+      { name:"Biologica",         sector:"Consumer",    cost:165000,  fmv:165000,  moic:1.00, entryVal:22.5, latestVal:38,   own:0.0073,  stage:"Pre-Seed", signal:"Green",  note:"GP-founded (JZ)",        wired:false },
+      { name:"Stiller's Soda",    sector:"Food & Bev",  cost:50000,   fmv:80769,   moic:1.62, entryVal:13,   latestVal:28,   own:null,    stage:"Seed",     signal:"Yellow", note:null,                     wired:false },
+      { name:"Drivepoint",        sector:"Fintech",     cost:498599,  fmv:498599,  moic:1.00, entryVal:24,   latestVal:null, own:0.0208,  stage:"Series A", signal:"Yellow", note:null,                     wired:false },
       { name:"Pioneer Pastures",  sector:"Food & Bev",  cost:250000,  fmv:250000,  moic:1.00, entryVal:35,   latestVal:null, own:0.0143,  stage:"Seed",     signal:"Green",  note:null,                     wired:false },
       { name:"Crosby",            sector:"Ent. SaaS",   cost:150002,  fmv:330998,  moic:2.21, entryVal:120,  latestVal:60,   own:0.00375, stage:"Series A", signal:"Yellow", note:null,                     wired:false },
-      { name:"Bodhium Labs",      sector:"Ent. SaaS",   cost:300000,  fmv:300000,  moic:1.00, entryVal:null, latestVal:null, own:0.015,   stage:"Pre-Seed", signal:"Green",  note:null,                     wired:false },
-      { name:"Kinetic Apps",      sector:"Dev Tools",   cost:250000,  fmv:250000,  moic:1.00, entryVal:null, latestVal:95,   own:0.00526, stage:"Series A", signal:"Green",  note:null,                     wired:false },
-      { name:"Ultra",             sector:"Consumer",    cost:500001,  fmv:499995,  moic:1.00, entryVal:63,   latestVal:75,   own:0.00667, stage:"Series A", signal:"Yellow", note:null,                     wired:false },
-      { name:"Metabologic AI",    sector:"Healthcare",  cost:300000,  fmv:300000,  moic:1.00, entryVal:18,   latestVal:null, own:0.015,   stage:"Pre-Seed", signal:"Green",  note:null,                     wired:false },
+      { name:"Bodhium Labs",      sector:"Ent. SaaS",   cost:300000,  fmv:300000,  moic:1.00, entryVal:20,   latestVal:null, own:0.015,   stage:"Pre-Seed", signal:"Green",  note:null,                     wired:false },
+      { name:"Kinetic Apps",      sector:"Dev Tools",   cost:250000,  fmv:250000,  moic:1.00, entryVal:95,   latestVal:null, own:0.00526, stage:"Series A", signal:"Green",  note:null,                     wired:false },
+      { name:"Ultra",             sector:"Consumer",    cost:500001,  fmv:499995,  moic:1.00, entryVal:75,   latestVal:null, own:0.00667, stage:"Series A", signal:"Yellow", note:null,                     wired:false },
+      { name:"Metabologic AI",    sector:"Healthcare",  cost:300000,  fmv:300000,  moic:1.00, entryVal:20,   latestVal:null, own:0.015,   stage:"Pre-Seed", signal:"Green",  note:null,                     wired:false },
+      { name:"Emanate",           sector:"Ent. SaaS",   cost:500000,  fmv:500000,  moic:1.00, entryVal:40,   latestVal:null, own:0.0125,  stage:"Seed",     signal:"Green",  note:"Initial investment ✓",   wired:true  },
     ];
 
     const f$ = n => (!n&&n!==0)?"—":n>=1e6?`$${(n/1e6).toFixed(2)}M`:`$${Math.round(n/1000)}K`;
@@ -232,10 +230,10 @@ Here's the full code:
               <div>
                 <div style={{fontSize:10,color:"rgba(255,245,230,0.5)",letterSpacing:"0.1em",fontFamily:"Arial,sans-serif",marginBottom:3}}>AFFILIATES III CO-INVEST CONSTRAINT</div>
                 <div style={{display:"flex",gap:24,alignItems:"baseline"}}>
-                  <span style={{fontSize:13,color:"white",fontFamily:"Arial,sans-serif"}}>Aff III DP: <strong>$105.6K</strong></span>
+                  <span style={{fontSize:13,color:"white",fontFamily:"Arial,sans-serif"}}>Aff III DP: <strong>$97.3K</strong></span>
                   <span style={{fontSize:13,color:"rgba(255,245,230,0.5)",fontFamily:"Arial,sans-serif"}}>÷ 1.6593%</span>
-                  <span style={{fontSize:13,color:"white",fontFamily:"Arial,sans-serif"}}>Family total: <strong>$6.36M</strong></span>
-                  <span style={{fontSize:15,color:GOLD,fontWeight:700}}>Fund III: $6.26M · Aff III: $105.6K</span>
+                  <span style={{fontSize:13,color:"white",fontFamily:"Arial,sans-serif"}}>Family total: <strong>$5.86M</strong></span>
+                  <span style={{fontSize:15,color:GOLD,fontWeight:700}}>Fund III: $5.77M · Aff III: $97.3K</span>
                   <span style={{fontSize:11,color:"rgba(255,245,230,0.45)",fontFamily:"Arial,sans-serif"}}>SlapSnacks $200K already deducted</span>
                 </div>
               </div>
@@ -247,9 +245,9 @@ Here's the full code:
             <div style={{background:"white",borderRadius:10,border:`1px solid ${CREAM_DARK}`,padding:"14px 18px",marginBottom:14,animation:"fadeIn 0.2s ease"}}>
               <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
                 {[
-                  {label:"FAMILY TOTAL DP",       val:"$6,364,164", sub:"LP+GP callable · Aduro fees"},
-                  {label:"AFFILIATES III DP",      val:"$105,600",   sub:"Binding constraint at 1.6593%"},
-                  {label:"FUND III DEPLOYABLE",    val:"$6,258,564", sub:"98.3407% of family total"},
+                  {label:"FAMILY TOTAL DP",       val:"$5,864,164", sub:"LP+GP callable · Aduro fees"},
+                  {label:"AFFILIATES III DP",      val:"$97,304",    sub:"Binding constraint at 1.6593%"},
+                  {label:"FUND III DEPLOYABLE",    val:"$5,766,860", sub:"98.3407% of family total"},
                   {label:"SLAP SNACKS",            val:"$200K in base",sub:"Soft commit already deducted"},
                 ].map(({label,val,sub})=>(
                   <div key={label} style={{padding:"10px 14px",background:"#FAFAF8",borderRadius:8,border:`1px solid ${CREAM_DARK}`}}>
@@ -619,7 +617,7 @@ Here's the full code:
           )}
 
           <p style={{textAlign:"center",fontStyle:"italic",color:NAVY,opacity:0.3,fontSize:11}}>
-            Usable DP $6,364,164 · SlapSnacks $200K already deducted in base · Fees from Aduro · LP+GP callable at 55% · Affiliates III co-invest at 1.6593%
+            Usable DP $5,864,164 · SlapSnacks $200K already deducted in base · Emanate $500K just deployed · Fees from Aduro · LP+GP callable at 55% · Affiliates III co-invest at 1.6593%
           </p>
 
         </div>
@@ -631,4 +629,3 @@ Here's the full code:
   </script>
 </body>
 </html>
-```
