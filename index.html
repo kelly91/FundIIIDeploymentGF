@@ -1,4 +1,4 @@
-Here's the full updated code:
+Here's the full code:
 
 ```html
 <!DOCTYPE html>
@@ -88,20 +88,20 @@ Here's the full updated code:
     const TIER_LABELS = { null:"— Assign Tier —", 1:"Tier 1 — Double Down", 2:"Tier 2 — Stay In", 3:"Tier 3 — Let It Ride" };
 
     const COMPANIES = [
-      { name:"Mosaic Platforms",  sector:"Fintech",     cost:390000,  fmv:390000,  moic:1.00, entryVal:43,   latestVal:72.5, own:0.0091,  stage:"Pre-Seed", signal:"Green",  note:"$750K follow-on wired ✓", wired:true  },
-      { name:"Seneca",            sector:"Hardware",    cost:219990,  fmv:346089,  moic:1.57, entryVal:115,  latestVal:220,  own:0.00348, stage:"Series A", signal:"Green",  note:"$20K Series A FO wired ✓", wired:true  },
-      { name:"PreemptiveAI",      sector:"Healthcare",  cost:750000,  fmv:750000,  moic:1.00, entryVal:22,   latestVal:null, own:0.0682,  stage:"Seed",     signal:"Green",  note:"No Follow On",           wired:false },
-      { name:"Climatic",          sector:"Healthcare",  cost:1000001, fmv:1000000, moic:1.00, entryVal:18,   latestVal:null, own:0.1111,  stage:"Seed",     signal:"Yellow", note:"No Follow On",           wired:false },
-      { name:"Biologica",         sector:"Consumer",    cost:165000,  fmv:165000,  moic:1.00, entryVal:22.5, latestVal:38,   own:0.0073,  stage:"Pre-Seed", signal:"Green",  note:"GP-founded (JZ)",        wired:false },
-      { name:"Stiller's Soda",    sector:"Food & Bev",  cost:50000,   fmv:80769,   moic:1.62, entryVal:13,   latestVal:28,   own:null,    stage:"Seed",     signal:"Yellow", note:null,                     wired:false },
-      { name:"Drivepoint",        sector:"Fintech",     cost:498599,  fmv:498599,  moic:1.00, entryVal:24,   latestVal:null, own:0.0208,  stage:"Series A", signal:"Yellow", note:null,                     wired:false },
-      { name:"Pioneer Pastures",  sector:"Food & Bev",  cost:250000,  fmv:250000,  moic:1.00, entryVal:35,   latestVal:null, own:0.0143,  stage:"Seed",     signal:"Green",  note:null,                     wired:false },
-      { name:"Crosby",            sector:"Ent. SaaS",   cost:150002,  fmv:330998,  moic:2.21, entryVal:120,  latestVal:60,   own:0.00375, stage:"Series A", signal:"Yellow", note:null,                     wired:false },
-      { name:"Bodhium Labs",      sector:"Ent. SaaS",   cost:300000,  fmv:300000,  moic:1.00, entryVal:20,   latestVal:null, own:0.015,   stage:"Pre-Seed", signal:"Green",  note:null,                     wired:false },
-      { name:"Kinetic Apps",      sector:"Dev Tools",   cost:250000,  fmv:250000,  moic:1.00, entryVal:95,   latestVal:null, own:0.00526, stage:"Series A", signal:"Green",  note:null,                     wired:false },
-      { name:"Ultra",             sector:"Consumer",    cost:500001,  fmv:499995,  moic:1.00, entryVal:75,   latestVal:null, own:0.00667, stage:"Series A", signal:"Yellow", note:null,                     wired:false },
-      { name:"Metabologic AI",    sector:"Healthcare",  cost:300000,  fmv:300000,  moic:1.00, entryVal:20,   latestVal:null, own:0.015,   stage:"Pre-Seed", signal:"Green",  note:null,                     wired:false },
-      { name:"Emanate",           sector:"Ent. SaaS",   cost:500000,  fmv:500000,  moic:1.00, entryVal:40,   latestVal:null, own:0.0125,  stage:"Seed",     signal:"Green",  note:"Initial investment ✓",   wired:true  },
+      { name:"Biologica",         sector:"Consumer",    cost:165000,  fmv:165000,  moic:1.00, entryVal:22.5, latestVal:38,   own:0.0073,  stage:"Pre-Seed", signal:"Green",  note:null, wired:false, costBreakdown:null },
+      { name:"Bodhium Labs",      sector:"Ent. SaaS",   cost:300000,  fmv:300000,  moic:1.00, entryVal:20,   latestVal:null, own:0.015,   stage:"Pre-Seed", signal:"Green",  note:null, wired:false, costBreakdown:null },
+      { name:"Climatic",          sector:"Healthcare",  cost:1000001, fmv:1000000, moic:1.00, entryVal:18,   latestVal:null, own:0.1111,  stage:"Seed",     signal:"Yellow", note:null, wired:false, costBreakdown:null },
+      { name:"Crosby",            sector:"Ent. SaaS",   cost:150002,  fmv:330998,  moic:2.21, entryVal:120,  latestVal:60,   own:0.00375, stage:"Series A", signal:"Yellow", note:null, wired:false, costBreakdown:null },
+      { name:"Drivepoint",        sector:"Fintech",     cost:498599,  fmv:498599,  moic:1.00, entryVal:24,   latestVal:null, own:0.0208,  stage:"Series A", signal:"Yellow", note:null, wired:false, costBreakdown:null },
+      { name:"Emanate",           sector:"Ent. SaaS",   cost:500000,  fmv:500000,  moic:1.00, entryVal:40,   latestVal:null, own:0.0125,  stage:"Seed",     signal:"Green",  note:null, wired:false, costBreakdown:null },
+      { name:"Kinetic Apps",      sector:"Dev Tools",   cost:250000,  fmv:250000,  moic:1.00, entryVal:95,   latestVal:null, own:0.00526, stage:"Series A", signal:"Green",  note:null, wired:false, costBreakdown:null },
+      { name:"Metabologic AI",    sector:"Healthcare",  cost:300000,  fmv:300000,  moic:1.00, entryVal:20,   latestVal:null, own:0.015,   stage:"Pre-Seed", signal:"Green",  note:null, wired:false, costBreakdown:null },
+      { name:"Mosaic Platforms",  sector:"Fintech",     cost:1140000, fmv:1140000, moic:1.00, entryVal:43,   latestVal:72.5, own:0.0091,  stage:"Pre-Seed", signal:"Green",  note:null, wired:true,  costBreakdown:"$390K initial + $750K FO" },
+      { name:"Pioneer Pastures",  sector:"Food & Bev",  cost:250000,  fmv:250000,  moic:1.00, entryVal:35,   latestVal:null, own:0.0143,  stage:"Seed",     signal:"Green",  note:null, wired:false, costBreakdown:null },
+      { name:"PreemptiveAI",      sector:"Healthcare",  cost:750000,  fmv:750000,  moic:1.00, entryVal:22,   latestVal:null, own:0.0682,  stage:"Seed",     signal:"Green",  note:null, wired:false, costBreakdown:null },
+      { name:"Seneca",            sector:"Hardware",    cost:219989,  fmv:346089,  moic:1.57, entryVal:115,  latestVal:220,  own:0.00348, stage:"Series A", signal:"Green",  note:null, wired:true,  costBreakdown:"$200K initial + $20K FO" },
+      { name:"Stiller's Soda",    sector:"Food & Bev",  cost:50000,   fmv:80769,   moic:1.62, entryVal:13,   latestVal:28,   own:null,    stage:"Seed",     signal:"Yellow", note:null, wired:false, costBreakdown:null },
+      { name:"Ultra",             sector:"Consumer",    cost:500001,  fmv:499995,  moic:1.00, entryVal:75,   latestVal:null, own:0.00667, stage:"Series A", signal:"Yellow", note:null, wired:false, costBreakdown:null },
     ];
 
     const f$ = n => (!n&&n!==0)?"—":n>=1e6?`$${(n/1e6).toFixed(2)}M`:`$${Math.round(n/1000)}K`;
@@ -172,7 +172,7 @@ Here's the full updated code:
       const maxNewDeals  = avgCheck>0 ? Math.floor(afterPipeline/(avgCheck/1000)) : 0;
       const overBudget   = (foTotal + pipelineM) > remaining;
 
-      const deployed = COMPANIES.reduce((s,c)=>s+c.cost,0)+750000+19997;
+      const deployed = COMPANIES.reduce((s,c)=>s+c.cost,0);
       const pctDep   = Math.round((deployed/1e6/20.2)*100);
       const t1cos    = ASSIGNABLE.filter(c=>asgn[c.name].tier===1).length;
       const t2cos    = ASSIGNABLE.filter(c=>asgn[c.name].tier===2).length;
@@ -335,10 +335,6 @@ Here's the full updated code:
                 <span style={{fontSize:11,color:"white",fontFamily:"Arial,sans-serif"}}>{TIER_LABELS[t]}</span>
               </div>
             ))}
-            <div style={{marginLeft:"auto",display:"flex",gap:14,fontSize:11,fontFamily:"Arial,sans-serif",opacity:0.5}}>
-              <span style={{display:"flex",alignItems:"center",gap:4}}><span style={{width:7,height:7,borderRadius:"50%",background:"#4CAF50",display:"inline-block"}}/>Green</span>
-              <span style={{display:"flex",alignItems:"center",gap:4}}><span style={{width:7,height:7,borderRadius:"50%",background:"#FFC107",display:"inline-block"}}/>Yellow</span>
-            </div>
           </div>
 
           {/* Company table */}
@@ -354,15 +350,15 @@ Here's the full updated code:
               return (
                 <div key={c.name} style={{display:"grid",gridTemplateColumns:"1.6fr 0.65fr 0.6fr 0.7fr 0.7fr 0.75fr 0.6fr 0.45fr 1.5fr 1fr",gap:8,padding:"12px 18px",background:i%2===0?"white":"#FDFAF5",borderBottom:isLast?"none":`1px solid ${CREAM_DARK}`,alignItems:"center",opacity:c.wired?0.78:1}}>
                   <div>
-                    <div style={{fontWeight:600,fontSize:13,display:"flex",alignItems:"center",gap:6}}>
-                      <span style={{width:7,height:7,borderRadius:"50%",background:c.signal==="Green"?"#4CAF50":"#FFC107",display:"inline-block",flexShrink:0}}/>
-                      {c.name}
-                    </div>
+                    <div style={{fontWeight:600,fontSize:13}}>{c.name}</div>
                     {c.note && <div style={{fontSize:9,color:c.wired?"#2E7D32":"#aaa",fontStyle:"italic",marginTop:2}}>{c.note}</div>}
                   </div>
                   <div style={{fontSize:11,opacity:0.6}}>{c.sector}</div>
                   <div style={{fontSize:11,opacity:0.6}}>{c.stage}</div>
-                  <div style={{fontSize:12,fontWeight:500}}>{f$(c.cost)}</div>
+                  <div>
+                    <div style={{fontSize:12,fontWeight:500}}>{f$(c.cost)}</div>
+                    {c.costBreakdown && <div style={{fontSize:9,opacity:0.5,marginTop:2,fontFamily:"Arial,sans-serif"}}>{c.costBreakdown}</div>}
+                  </div>
                   <div style={{fontSize:12}}>{f$(c.fmv)}</div>
                   <div style={{fontSize:11}}>{fV(c.entryVal)}{c.latestVal?<span style={{opacity:0.45}}> → {fV(c.latestVal)}</span>:""}</div>
                   <div style={{fontSize:11}}>{fP(c.own)}</div>
