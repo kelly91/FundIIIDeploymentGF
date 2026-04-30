@@ -1,6 +1,3 @@
-Here's the full code:
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,7 +55,6 @@ Here's the full code:
   <div id="root"></div>
   <script type="text/babel">
     const { useState, useMemo, useEffect } = React;
-
     const STORAGE_KEY = "gf-fund3-state-v1";
     const encodeState = (s) => {
       try { return btoa(encodeURIComponent(JSON.stringify(s))); } catch { return ""; }
@@ -82,11 +78,27 @@ Here's the full code:
     const NAVY="#031738", CREAM="#FFF5E6", CREAM_DARK="#EAD9C0", GOLD="#B08D57";
     const BLUE2="#4A6FA5", BLUE3="#9DB5C7", GREEN="#2E7D32", GREEN_BG="#E8F5E9", PURPLE="#7B5EA7";
 
-    const BASE_DP = 5864164;
+    // ==========================================================================
+    // SOURCE OF TRUTH — pulled from Airtable Entity Snapshots, post-SlapSnacks
+    // Airtable base: appirbXgN1LWHPhZA · table: tbl0fdJuxUvky5laM
+    // Fund III record: recYXDteZSdc2SiDq · Affiliates III record: reckdKzjyDME3WU5x
+    //
+    // To refresh: pull Fund III + Aff III Usable Dry Powder (Waive) from Airtable,
+    // sum to get pre-SlapSnacks family DP, subtract $200K SlapSnacks soft commit,
+    // update the four constants below + LAST_SYNCED.
+    // ==========================================================================
+    const LAST_SYNCED      = "April 30, 2026";
+    const FAMILY_DP_PRE    = 6447879;            // Fund III $6,341,155 + Aff III $106,725 from Airtable Waive Usable DP
+    const SLAPSNACKS       = 200000;             // soft commit, manually held in calculator (not in Airtable)
+    const FAMILY_DP        = FAMILY_DP_PRE - SLAPSNACKS;          // $6,247,879
+    const AFF_III_RATIO    = 0.016552;           // 335,010 / 20,240,000 (Aff III commit / family commit)
+    const FUND_III_RATIO   = 0.983448;           // 19,904,990 / 20,240,000 (Fund III commit / family commit)
+    const AFF_III_DP       = Math.round(FAMILY_DP * AFF_III_RATIO);   // $103,414
+    const FUND_III_DEPLOY  = Math.round(FAMILY_DP * FUND_III_RATIO);  // $6,144,465
+    const BASE_DP          = FUND_III_DEPLOY;    // legacy alias, still references Fund III deployable
 
     const TIER_COLORS = { null:"#C8C0B4", 1:NAVY, 2:BLUE2, 3:BLUE3 };
     const TIER_LABELS = { null:"— Assign Tier —", 1:"Tier 1 — Double Down", 2:"Tier 2 — Stay In", 3:"Tier 3 — Let It Ride" };
-
     const COMPANIES = [
       { name:"Biologica",         sector:"Consumer",    cost:165000,  fmv:165000,  moic:1.00, entryVal:22.5, latestVal:38,   own:0.0073,  stage:"Pre-Seed", signal:"Green",  note:null, wired:false, costBreakdown:null },
       { name:"Bodhium Labs",      sector:"Ent. SaaS",   cost:300000,  fmv:300000,  moic:1.00, entryVal:20,   latestVal:null, own:0.015,   stage:"Pre-Seed", signal:"Green",  note:null, wired:false, costBreakdown:null },
@@ -103,14 +115,11 @@ Here's the full code:
       { name:"Stiller's Soda",    sector:"Food & Bev",  cost:50000,   fmv:80769,   moic:1.62, entryVal:13,   latestVal:28,   own:null,    stage:"Seed",     signal:"Yellow", note:null, wired:false, costBreakdown:null },
       { name:"Ultra",             sector:"Consumer",    cost:500001,  fmv:499995,  moic:1.00, entryVal:75,   latestVal:null, own:0.00667, stage:"Series A", signal:"Yellow", note:null, wired:false, costBreakdown:null },
     ];
-
     const f$ = n => (!n&&n!==0)?"—":n>=1e6?`$${(n/1e6).toFixed(2)}M`:`$${Math.round(n/1000)}K`;
     const fP = n => !n?"—":`${(n*100).toFixed(2)}%`;
     const fX = n => !n?"—":`${n.toFixed(2)}x`;
     const fV = n => (!n&&n!==0)?"—":`$${n}M`;
-
     const ASSIGNABLE = COMPANIES.filter(c => !c.wired);
-
     function App() {
       const [remaining, setRemaining] = useState(INITIAL?.remaining ?? BASE_DP / 1e6);
       const [avgCheck, setAvgCheck]   = useState(INITIAL?.avgCheck ?? 350);
@@ -129,21 +138,18 @@ Here's the full code:
         return base;
       });
       const [copied, setCopied] = useState(false);
-
       useEffect(() => {
         const state = { remaining, avgCheck, pipeline, dealPerMonth, asgn };
         const encoded = encodeState(state);
         if (encoded) window.history.replaceState(null, "", "#" + encoded);
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
       }, [remaining, avgCheck, pipeline, dealPerMonth, asgn]);
-
       const copyShareLink = () => {
         navigator.clipboard.writeText(window.location.href).then(() => {
           setCopied(true);
           setTimeout(() => setCopied(false), 2000);
         });
       };
-
       const setTier = (name, val) => setAsgn(a => ({...a,[name]:{...a[name],tier:val==="null"?null:Number(val)}}));
       const setFO   = (name, val) => setAsgn(a => ({...a,[name]:{...a[name],followOn:val}}));
       const resetAll = () => {
@@ -152,10 +158,8 @@ Here's the full code:
         try { localStorage.removeItem(STORAGE_KEY); } catch {}
         window.history.replaceState(null, "", window.location.pathname + window.location.search);
       };
-
       const assignedCount = ASSIGNABLE.filter(c => asgn[c.name].tier !== null).length;
       const allAssigned   = assignedCount === ASSIGNABLE.length;
-
       const {t1,t2,foTotal} = useMemo(() => {
         let t1=0,t2=0;
         ASSIGNABLE.forEach(c => {
@@ -165,46 +169,36 @@ Here's the full code:
         });
         return {t1:t1/1000,t2:t2/1000,foTotal:(t1+t2)/1000};
       },[asgn]);
-
       const pipelineM    = pipeline.reduce((s,d)=>s+d.checkK/1000,0);
       const afterFO      = Math.max(0, remaining - foTotal);
       const afterPipeline= Math.max(0, afterFO - pipelineM);
       const maxNewDeals  = avgCheck>0 ? Math.floor(afterPipeline/(avgCheck/1000)) : 0;
       const overBudget   = (foTotal + pipelineM) > remaining;
-
       const deployed = COMPANIES.reduce((s,c)=>s+c.cost,0);
-      const pctDep   = Math.round((deployed/1e6/20.2)*100);
+      const pctDep   = Math.round((deployed/1e6/20.24)*100);
       const t1cos    = ASSIGNABLE.filter(c=>asgn[c.name].tier===1).length;
       const t2cos    = ASSIGNABLE.filter(c=>asgn[c.name].tier===2).length;
-
       const remainingColor = afterPipeline<0.5?"#DC3545":afterPipeline<1.5?"#E67E22":GREEN;
-
       const foPct   = remaining>0 ? Math.round((foTotal/remaining)*100) : 0;
       const newPct  = 100 - foPct;
       const foDeals = Math.floor(foTotal/0.385);
       const newPoolM = Math.max(0, remaining - foTotal);
-
       const addDeal = () => {
         if(!newName.trim()||newCheckK<=0) return;
         setPipeline(p=>[...p,{id:Date.now(),name:newName.trim(),checkK:newCheckK}]);
         setNewName(''); setNewCheckK(350);
       };
-
       const totalNew = pipeline.length + maxNewDeals;
       const monthsLeft = dealPerMonth>0 ? Math.ceil(totalNew/dealPerMonth) : 99;
-      const deployDate = new Date(2026,3,17);
+      const deployDate = new Date(2026,3,30);
       deployDate.setMonth(deployDate.getMonth()+monthsLeft);
       const deployStr = deployDate.toLocaleDateString('en-US',{month:'long',year:'numeric'});
-
       const foW  = Math.min(100,(foTotal/remaining)*100);
       const pipW = Math.min(100-foW,(pipelineM/remaining)*100);
-
       const card = (bg,border) => ({background:bg||"white",borderRadius:10,padding:"14px 16px",border:border||`1px solid ${CREAM_DARK}`});
-
       return (
         <div style={{background:CREAM,minHeight:"100vh",padding:"28px 24px",fontFamily:"Georgia,serif",color:NAVY}}>
         <div style={{maxWidth:1160,margin:"0 auto"}}>
-
           {/* Header */}
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:14}}>
             <div>
@@ -224,7 +218,6 @@ Here's the full code:
               <button onClick={resetAll} style={{fontSize:11,fontFamily:"Arial,sans-serif",background:"white",border:`1px solid ${CREAM_DARK}`,borderRadius:8,padding:"7px 14px",cursor:"pointer",color:NAVY,opacity:0.7}}>Reset all</button>
             </div>
           </div>
-
           {/* Constraint banner */}
           <div onClick={()=>setShowConstraint(s=>!s)}
             style={{background:NAVY,borderRadius:10,padding:"12px 18px",marginBottom:14,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -232,26 +225,25 @@ Here's the full code:
               <div style={{width:3,height:28,background:GOLD,borderRadius:2,flexShrink:0}}/>
               <div>
                 <div style={{fontSize:10,color:"rgba(255,245,230,0.5)",letterSpacing:"0.1em",fontFamily:"Arial,sans-serif",marginBottom:3}}>AFFILIATES III CO-INVEST CONSTRAINT</div>
-                <div style={{display:"flex",gap:24,alignItems:"baseline"}}>
-                  <span style={{fontSize:13,color:"white",fontFamily:"Arial,sans-serif"}}>Aff III DP: <strong>$97.3K</strong></span>
-                  <span style={{fontSize:13,color:"rgba(255,245,230,0.5)",fontFamily:"Arial,sans-serif"}}>÷ 1.6593%</span>
-                  <span style={{fontSize:13,color:"white",fontFamily:"Arial,sans-serif"}}>Family total: <strong>$5.86M</strong></span>
-                  <span style={{fontSize:15,color:GOLD,fontWeight:700}}>Fund III: $5.77M · Aff III: $97.3K</span>
-                  <span style={{fontSize:11,color:"rgba(255,245,230,0.45)",fontFamily:"Arial,sans-serif"}}>SlapSnacks $200K already deducted</span>
+                <div style={{display:"flex",gap:24,alignItems:"baseline",flexWrap:"wrap"}}>
+                  <span style={{fontSize:13,color:"white",fontFamily:"Arial,sans-serif"}}>Aff III DP: <strong>${(AFF_III_DP/1000).toFixed(1)}K</strong></span>
+                  <span style={{fontSize:13,color:"rgba(255,245,230,0.5)",fontFamily:"Arial,sans-serif"}}>÷ {(AFF_III_RATIO*100).toFixed(4)}%</span>
+                  <span style={{fontSize:13,color:"white",fontFamily:"Arial,sans-serif"}}>Family total: <strong>${(FAMILY_DP/1e6).toFixed(2)}M</strong></span>
+                  <span style={{fontSize:15,color:GOLD,fontWeight:700}}>Fund III: ${(FUND_III_DEPLOY/1e6).toFixed(2)}M · Aff III: ${(AFF_III_DP/1000).toFixed(1)}K</span>
+                  <span style={{fontSize:11,color:"rgba(255,245,230,0.45)",fontFamily:"Arial,sans-serif"}}>SlapSnacks $200K already deducted · Synced {LAST_SYNCED}</span>
                 </div>
               </div>
             </div>
             <span style={{fontSize:12,color:"rgba(255,245,230,0.4)",transform:showConstraint?"rotate(180deg)":"none",transition:"transform 0.2s",display:"inline-block"}}>▼</span>
           </div>
-
           {showConstraint && (
             <div style={{background:"white",borderRadius:10,border:`1px solid ${CREAM_DARK}`,padding:"14px 18px",marginBottom:14,animation:"fadeIn 0.2s ease"}}>
               <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
                 {[
-                  {label:"FAMILY TOTAL DP",       val:"$5,864,164", sub:"LP+GP callable · Aduro fees"},
-                  {label:"AFFILIATES III DP",      val:"$97,304",    sub:"Binding constraint at 1.6593%"},
-                  {label:"FUND III DEPLOYABLE",    val:"$5,766,860", sub:"98.3407% of family total"},
-                  {label:"SLAP SNACKS",            val:"$200K in base",sub:"Soft commit already deducted"},
+                  {label:"FAMILY TOTAL DP",       val:`$${FAMILY_DP.toLocaleString()}`,      sub:"Post-SlapSnacks · Aduro fees · Airtable Waive"},
+                  {label:"AFFILIATES III DP",     val:`$${AFF_III_DP.toLocaleString()}`,     sub:`Binding constraint at ${(AFF_III_RATIO*100).toFixed(4)}%`},
+                  {label:"FUND III DEPLOYABLE",   val:`$${FUND_III_DEPLOY.toLocaleString()}`,sub:`${(FUND_III_RATIO*100).toFixed(4)}% of family total`},
+                  {label:"SLAP SNACKS",           val:"$200K in base",                       sub:"Soft commit already deducted"},
                 ].map(({label,val,sub})=>(
                   <div key={label} style={{padding:"10px 14px",background:"#FAFAF8",borderRadius:8,border:`1px solid ${CREAM_DARK}`}}>
                     <div style={{fontSize:9,letterSpacing:"0.1em",opacity:0.4,fontFamily:"Arial,sans-serif",marginBottom:6}}>{label}</div>
@@ -261,15 +253,14 @@ Here's the full code:
                 ))}
               </div>
               <div style={{marginTop:10,fontSize:11,fontFamily:"Arial,sans-serif",color:NAVY,opacity:0.5}}>
-                Outstanding calls included: Dave + Jeff last 15% GP call, Neil GP contribution pending transfer, Adam Templeton Aff III Call 3 ($15K). Fees from Aduro directly.
+                Fund III commit $19,904,990 · Aff III commit $335,010 · Family $20,240,000. Outstanding calls included: Dave + Jeff last 15% GP call, Neil GP contribution pending transfer, Adam Templeton Aff III Call 3 ($15K). Fees and remaining expenses sourced from Aduro.
               </div>
             </div>
           )}
-
           {/* Summary bar */}
           <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:10,marginBottom:16}}>
             {[
-              {label:"FUND III SIZE",          val:"$20.2M",                      edit:false},
+              {label:"FUND III SIZE",          val:"$20.24M",                     edit:false},
               {label:"DEPLOYED (incl. FOs)",   val:f$(deployed),                  edit:false, bar:true},
               {label:"USABLE DP (EDITABLE)",   val:null,                          edit:true},
               {label:"FOLLOW-ON RESERVED",     val:allAssigned?`$${foTotal.toFixed(2)}M`:"—", edit:false},
@@ -302,7 +293,6 @@ Here's the full code:
               </div>
             ))}
           </div>
-
           {/* Current Split */}
           <div style={{background:"white",borderRadius:10,border:`1px solid ${CREAM_DARK}`,padding:"14px 18px",marginBottom:14}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
@@ -326,7 +316,6 @@ Here's the full code:
               <div style={{height:"100%",width:`${newPct}%`,background:NAVY,transition:"width 0.3s ease"}} title={`New Deals ${newPct}%`}/>
             </div>
           </div>
-
           {/* Tier legend */}
           <div style={{display:"flex",gap:8,marginBottom:14,alignItems:"center"}}>
             <span style={{fontSize:11,opacity:0.45,fontFamily:"Arial,sans-serif",marginRight:4}}>Tiers:</span>
@@ -336,7 +325,6 @@ Here's the full code:
               </div>
             ))}
           </div>
-
           {/* Company table */}
           <div style={{background:"white",borderRadius:12,border:`1px solid ${CREAM_DARK}`,overflow:"hidden",marginBottom:14}}>
             <div style={{display:"grid",gridTemplateColumns:"1.6fr 0.65fr 0.6fr 0.7fr 0.7fr 0.75fr 0.6fr 0.45fr 1.5fr 1fr",gap:8,padding:"10px 18px",background:NAVY}}>
@@ -392,7 +380,6 @@ Here's the full code:
               );
             })}
           </div>
-
           {/* Summary tiles */}
           <div style={{display:"grid",gridTemplateColumns:"1.2fr 1fr 1fr 1fr",gap:12,marginBottom:14}}>
             <div style={card()}>
@@ -431,7 +418,6 @@ Here's the full code:
               </div>
             </div>
           </div>
-
           {/* Future Commits + Timeline */}
           <div style={{background:"white",borderRadius:12,border:`2px solid ${NAVY}`,overflow:"hidden",marginBottom:14}}>
             <div onClick={()=>setShowSim(s=>!s)}
@@ -442,11 +428,9 @@ Here's the full code:
               </div>
               <span style={{fontSize:14,color:"rgba(255,245,230,0.6)",display:"inline-block",transform:showSim?"rotate(180deg)":"none"}}>▼</span>
             </div>
-
             {showSim && (
               <div style={{padding:"20px"}}>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:20}}>
-
                   {/* LEFT: Future commits entry */}
                   <div style={card("#FAFAF8")}>
                     <div style={{fontSize:9,letterSpacing:"0.1em",opacity:0.4,fontFamily:"Arial,sans-serif",marginBottom:12}}>FUTURE COMMITS — NEW CHECKS BEING CONSIDERED</div>
@@ -455,7 +439,7 @@ Here's the full code:
                         <span>🔒</span>
                         <div>
                           <div style={{fontSize:12,fontWeight:600,color:"#856404"}}>SlapSnacks — $200K</div>
-                          <div style={{fontSize:10,color:"#856404",fontFamily:"Arial,sans-serif",opacity:0.7}}>Already deducted from $6.4M base · shown for reference only</div>
+                          <div style={{fontSize:10,color:"#856404",fontFamily:"Arial,sans-serif",opacity:0.7}}>Already deducted from ${(FAMILY_DP_PRE/1e6).toFixed(2)}M base · shown for reference only</div>
                         </div>
                       </div>
                       <span style={{fontSize:11,color:"#856404",fontFamily:"Arial,sans-serif",fontStyle:"italic"}}>baked in ✓</span>
@@ -505,10 +489,8 @@ Here's the full code:
                       </div>
                     )}
                   </div>
-
                   {/* RIGHT: Waterfall + Timeline */}
                   <div style={{display:"flex",flexDirection:"column",gap:14}}>
-
                     {/* Waterfall */}
                     <div style={card("#FAFAF8")}>
                       <div style={{fontSize:9,letterSpacing:"0.1em",opacity:0.4,fontFamily:"Arial,sans-serif",marginBottom:12}}>CAPITAL WATERFALL</div>
@@ -529,10 +511,9 @@ Here's the full code:
                         </div>
                       ))}
                       <div style={{marginTop:10,fontSize:10,opacity:0.45,fontFamily:"Arial,sans-serif"}}>
-                        At ${avgCheck}K avg → <strong>{maxNewDeals} new position{maxNewDeals!==1?"s":""}</strong> remaining
+                        At ${avgCheck}K avg → <strong>{maxNewDeals} new position{maxNewDeals!==1?"":""}</strong> remaining
                       </div>
                     </div>
-
                     {/* Timeline */}
                     <div style={{...card(NAVY),color:"white"}}>
                       <div style={{fontSize:9,letterSpacing:"0.1em",opacity:0.5,fontFamily:"Arial,sans-serif",marginBottom:12}}>DEPLOYMENT TIMELINE</div>
@@ -567,7 +548,6 @@ Here's the full code:
                     </div>
                   </div>
                 </div>
-
                 {/* Capital bar */}
                 <div>
                   <div style={{display:"flex",justifyContent:"space-between",fontSize:9,fontFamily:"Arial,sans-serif",opacity:0.45,marginBottom:5}}>
@@ -589,7 +569,6 @@ Here's the full code:
               </div>
             )}
           </div>
-
           {/* Tier breakdown */}
           {assignedCount>0&&(
             <div style={{background:"white",borderRadius:10,border:`1px solid ${CREAM_DARK}`,padding:"12px 18px",marginBottom:14}}>
@@ -614,18 +593,14 @@ Here's the full code:
               </div>
             </div>
           )}
-
           <p style={{textAlign:"center",fontStyle:"italic",color:NAVY,opacity:0.3,fontSize:11}}>
-            Usable DP $5,864,164 · SlapSnacks $200K already deducted in base · Emanate $500K just deployed · Fees from Aduro · LP+GP callable at 55% · Affiliates III co-invest at 1.6593%
+            Usable DP ${FAMILY_DP.toLocaleString()} · SlapSnacks $200K already deducted in base · Emanate $500K reflected in Airtable cost basis · Fees from Aduro · LP+GP callable at 55% · Affiliates III co-invest at {(AFF_III_RATIO*100).toFixed(4)}% · Last synced {LAST_SYNCED}
           </p>
-
         </div>
         </div>
       );
     }
-
     ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
   </script>
 </body>
 </html>
-```
